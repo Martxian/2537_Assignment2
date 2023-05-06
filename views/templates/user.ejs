@@ -1,1 +1,17 @@
-<li> <%= user.username %> </li>
+<li>
+    <%= user.username %> - <%= user.type %>
+        <form method="POST" action="/admin/promote">
+            <input type="hidden" name="userId" value="<%= user._id %>" />
+            <input type="hidden" name="action" value="promote" />
+            <button>
+                Promote to Admin
+            </button>
+        </form>
+        <form method="POST" action="/admin/demote">
+            <input type="hidden" name="userId" value="<%= user._id %>" />
+            <input type="hidden" name="action" value="demote" />
+            <button>
+                Demote to User
+            </button>
+        </form>
+</li>
