@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const saltRounds = 12;
+const { ObjectId } = require('mongodb');
 
 const port = process.env.PORT || 3000;
 const app = express();
@@ -284,9 +285,39 @@ app.get('/members', (req, res) => {
 });
 
 app.get('/admin', sessionValidation, adminAuthorization, async (req, res) => {
-    const result = await userCollection.find().project({ username: 1, _id: 1 }).toArray();
+    // const result = await userCollection.find().project({ username: 1, _id: 1, user_type: 1 }).toArray();
 
-    res.render("admin", { users: result });
+    // res.render("admin", { users: result });
+    const result = await userCollection.find().project({ username: 1, _id: 1, user_type: 1 }).toArray();
+
+    // Map the result to include a "type" field in each user object
+    const users = result.map(user => {
+        return {
+            _id: user._id,
+            username: user.username,
+            type: user.user_type // Add the "user_type" field as "type"
+        };
+    });
+
+    res.render("admin", { users: users });
+});
+
+app.post('/admin/promote', async (req, res) => {
+    const { userId } = req.body;
+    await userCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { user_type: "admin" } }
+    );
+    res.redirect('/admin');
+});
+
+app.post("/admin/demote", async (req, res) => {
+    const { userId } = req.body;
+    await userCollection.updateOne(
+        { _id: new ObjectId(userId) },
+        { $set: { user_type: "user" } }
+    );
+    res.redirect("/admin");
 });
 
 app.use(express.static(__dirname + "/public"));
