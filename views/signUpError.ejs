@@ -1,3 +1,8 @@
 <%- include("templates/header") %>
-    Error: <%= message %>. Please <a href="/signup">try again!</a>.
-        <%- include("templates/footer") %>
+    <div class="container text-center p-5">
+        <p class="fw-bold text-danger">Error: <%= message %>.</p>
+        <p class="fw-bold text-danger">Please try again!</p>
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center my-3" href="/signup">Sign Up</a>
+    </div>
+
+    <%- include("templates/footer") %>

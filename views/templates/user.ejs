@@ -1,17 +1,20 @@
-<li>
-    <%= user.username %> - <%= user.type %>
-        <form method="POST" action="/admin/promote">
-            <input type="hidden" name="userId" value="<%= user._id %>" />
-            <input type="hidden" name="action" value="promote" />
-            <button>
-                Promote to Admin
-            </button>
-        </form>
-        <form method="POST" action="/admin/demote">
-            <input type="hidden" name="userId" value="<%= user._id %>" />
-            <input type="hidden" name="action" value="demote" />
-            <button>
-                Demote to User
-            </button>
-        </form>
+<li class="my-3">
+    <p class="d-inline fw-bold">Username: </p>
+    <%= user.username %>
+        <p class="d-inline fw-bold">User Type: </p>
+        <%= user.type %>
+            <form class="d-inline" method="POST" action="/admin/promote">
+                <input type="hidden" name="userId" value="<%= user._id %>" />
+                <input type="hidden" name="action" value="promote" />
+                <button class="btn btn-primary d-inline-flex align-items-center ms-5 btn-sm" type="submit">
+                    Promote to Admin
+                </button>
+            </form>
+            <form class="d-inline" method="POST" action="/admin/demote">
+                <input type="hidden" name="userId" value="<%= user._id %>" />
+                <input type="hidden" name="action" value="demote" />
+                <button class="btn btn-outline-secondary d-inline-flex align-items-center btn-sm" type="submit">
+                    Demote to User
+                </button>
+            </form>
 </li>

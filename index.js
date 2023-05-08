@@ -1,6 +1,7 @@
 require("./utils.js");
 require('dotenv').config();
 
+const url = require('url');
 const express = require('express');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
@@ -30,6 +31,13 @@ var { database } = require("./databaseConnection");
 const userCollection = database.db(mongodb_database).collection("users");
 
 app.set('view engine', 'ejs');
+
+const navLinks = [
+    { name: "Home", link: "/" },
+    { name: "Members", link: "/members" },
+    { name: "Admin", link: "/admin" },
+    { name: "404", link: "/dne" }
+];
 
 app.use(express.urlencoded({ extended: false }));
 
@@ -65,7 +73,7 @@ function sessionValidation(req, res, next) {
 }
 
 function isAdmin(req) {
-    if (req.session.user_type == 'admin') {
+    if (req.session.user_type == 'Admin') {
         return true;
     }
     return false;
@@ -74,13 +82,19 @@ function isAdmin(req) {
 function adminAuthorization(req, res, next) {
     if (!isAdmin(req)) {
         res.status(403);
-        res.render("errorMessage", { error: "Not Authorized" });
+        res.render("403", { error: "You are not authorized!", navLinks: navLinks });
         return;
     }
     else {
         next();
     }
 }
+
+app.use("/", (req, res, next) => {
+    app.locals.navLinks = navLinks;
+    app.locals.currentURL = url.parse(req.url).pathname;
+    next();
+});
 
 app.get('/', (req, res) => {
     if (!req.session.authenticated) {
@@ -148,7 +162,6 @@ app.get('/signUp', (req, res) => {
     res.render("signUp");
 });
 
-// To do
 app.post('/submitUser', async (req, res) => {
     var username = req.body.username;
     var email = req.body.email;
@@ -175,7 +188,7 @@ app.post('/submitUser', async (req, res) => {
         username: username,
         email: email,
         password: hashedPassword,
-        user_type: "user"
+        user_type: "User"
     });
     console.log("Inserted user");
 
@@ -264,14 +277,11 @@ const imageURL = [
     "tap.gif"
 ];
 
-app.get('/cat/:id', (req, res) => {
-
-    var cat = req.params.id;
-
-    res.render("cat", { cat: cat });
+app.get('/members', (req, res) => {
+    res.render("members");
 });
 
-app.get('/members', (req, res) => {
+app.get('/oldmembers', (req, res) => {
     if (!req.session.authenticated) {
         res.redirect('/');
         return;
@@ -281,21 +291,17 @@ app.get('/members', (req, res) => {
     const imageIndex = Math.floor(Math.random() * imageURL.length);
     const image = imageURL[imageIndex];
 
-    res.render("members", { username: username, image: image });
+    res.render("oldmembers", { username: username, image: image });
 });
 
 app.get('/admin', sessionValidation, adminAuthorization, async (req, res) => {
-    // const result = await userCollection.find().project({ username: 1, _id: 1, user_type: 1 }).toArray();
-
-    // res.render("admin", { users: result });
     const result = await userCollection.find().project({ username: 1, _id: 1, user_type: 1 }).toArray();
 
-    // Map the result to include a "type" field in each user object
     const users = result.map(user => {
         return {
             _id: user._id,
             username: user.username,
-            type: user.user_type // Add the "user_type" field as "type"
+            type: user.user_type
         };
     });
 
@@ -306,7 +312,7 @@ app.post('/admin/promote', async (req, res) => {
     const { userId } = req.body;
     await userCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { user_type: "admin" } }
+        { $set: { user_type: "Admin" } }
     );
     res.redirect('/admin');
 });
@@ -315,7 +321,7 @@ app.post("/admin/demote", async (req, res) => {
     const { userId } = req.body;
     await userCollection.updateOne(
         { _id: new ObjectId(userId) },
-        { $set: { user_type: "user" } }
+        { $set: { user_type: "User" } }
     );
     res.redirect("/admin");
 });

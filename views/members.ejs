@@ -1,6 +1,9 @@
 <%- include("templates/header") %>
-    <h1>Hello, <%= username %>!</h1>
-    <img src='/<%= image %>' style='width:30%; height:auto;'>
-    <br></br>
-    <a href='/logout'>Logout</a>
+    <h1>Cats</h1>
+
+    <div class="row mb-3 text-center">
+        <div class="col-md-4 themed-grid-col"><img class="img-fluid" src='/piano.gif'></div>
+        <div class="col-md-4 themed-grid-col"><img class="img-fluid" src='/pot.gif'></div>
+        <div class="col-md-4 themed-grid-col"><img class="img-fluid" src='/tap.gif'></div>
+    </div>
     <%- include("templates/footer") %>

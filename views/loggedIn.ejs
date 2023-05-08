@@ -1,9 +1,10 @@
 <%- include("templates/header") %>
-    <h1>Hello <%= username %>!</h1>
-    </br>
-    <a href='/members'>Members</a>
-    <br></br>
-    <a href='/admin'>Admin</a>
-    <br></br>
-    <a href='/logout'>Logout</a>
+    <div class="container text-center my-5">
+        <h1 class="my-5">Hello <%= username %>!</h1>
+        <a class="btn btn-light rounded-pill px-3" href='/'>Home</a>
+        <a class="btn btn-info rounded-pill px-3" href='/members'>Members</a>
+        <a class="btn btn-warning rounded-pill px-3" href='/admin'>Admin</a>
+        <a class="btn btn-secondary rounded-pill px-3" px-3" href='/dne'>404</a>
+        <a class="btn btn-danger rounded-pill px-3" href='/logout'>Logout</a>
+    </div>
     <%- include("templates/footer") %>
